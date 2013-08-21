@@ -331,13 +331,43 @@ Copyright 2012, James Yu, Joscha Feth
       fromDraft:  (if postParams.draft is "undefined" then null else postParams.draft)
       _raw: postParams
 
-    # Adapted from http://notepad2.blogspot.com/2012/02/javascript-parse-string-of-email.html
-    toEmailArray: (str) ->
-      return [] if !str
-      regex = /(?:"([^"]+)")? ?<?(.*?@[^>,]+)>?,? ?/g;
-      while (m = regex.exec str)
-          name:  m[1]
-          email: m[2]
+    toEmailArray: (addressArray) ->
+      output = []
+      for address in addressArray
+        if !address
+          continue
+        # address is either in form "First Last <emailaddress@gmail.com>" or
+        # "emailaddress@gmail.com"
+        emailParts = @reverseSplit(address, ' ', 1)
+        if emailParts.length == 1
+          name = null
+          email = emailParts[0]
+        else
+          name = emailParts[0]
+          email = emailParts[1]
+        output.push
+          name: name
+          email: email.replace(/[<>]/g, '')
+      return output
+
+    reverseSplit: (str, delim=' ', maxSplit=0) ->
+      output = []
+      index = str.length
+      lastSplit = index
+      curSplit = 0
+      while index > 1
+        if maxSplit and curSplit >= maxSplit
+          break
+        if str.charAt(index - 1) == delim
+          output.push str.substring(index, lastSplit)
+          curSplit += 1
+          lastSplit = index - 1
+        index -= 1
+
+      remaining = str.substring(0, lastSplit)
+      if remaining
+        output.push(remaining)
+      return output.reverse()
 
     detectXHREvents: (params) =>
       try
