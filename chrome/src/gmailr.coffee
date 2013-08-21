@@ -417,7 +417,7 @@ Copyright 2012, James Yu, Joscha Feth
 
           # Composing
           when "sm"
-            if @currentView() is @VIEW_CONVERSATION
+            if @currentView() is @VIEW_CONVERSATION and postParams.rm != 'undefined'
               dbg "User replied to an email."
               @notify @EVENT_REPLY, @toEmailProps postParams
             else
