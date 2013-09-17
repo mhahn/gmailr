@@ -86,6 +86,7 @@ Copyright 2012, James Yu, Joscha Feth
     ignoreDOMElements:      []
 
     EVENT_VIEW_THREAD:        'viewThread'
+    EVENT_VIEW_SENT_THREAD:   'viewSentThread'
     EVENT_LOADED:             'load'
     EVENT_ARCHIVE:            'archive'
     EVENT_APPLY_LABEL:        'applyLabel'
@@ -392,8 +393,17 @@ Copyright 2012, James Yu, Joscha Feth
             unless urlParams.th
               @notify @EVENT_REFRESH_INBOX
             else
-              dbg "User views a thred"
+              dbg "User views a thread"
               @notify @EVENT_VIEW_THREAD, urlParams.th
+
+          # View thread from "View Message" shortcut after composing a message.
+          # This is the only case where the thread_id is not present in the url
+          # hash
+          when "cv"
+
+            if urlParams.rt is "c"
+                dbg "User views a sent thread"
+                @notify @EVENT_VIEW_SENT_THREAD, urlParams.th
 
           # Archiving
           when "rc_^i"
